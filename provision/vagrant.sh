@@ -68,10 +68,19 @@ cp /vagrant/provision/php.ini /etc/php5/fpm/php.ini
 
 echo "Creating 'wordpress' database"
 echo 'create database if not exists `wordpress`' | mysql
-echo 'create database if not exists `wordpress_test`' | mysql
 
 cp /vagrant/provision/wp-config.php /vagrant/wp-config.php
 
 service nginx restart
 service php5-fpm restart
+
+echo 'Installing phpunit'
+wget https://phar.phpunit.de/phpunit.phar --no-check-certificate > /dev/null
+chmod +x phpunit.phar > /dev/null
+mv phpunit.phar /usr/bin/phpunit > /dev/null
+
+echo 'Instaling wp tests'
+/vagrant/provision/install-wp-tests.sh wordpress_test root vagrant localhost latest > /dev/null
+
+cp /vagrant/provision/wp-tests-config.php /vagrant/wp-tests-config.php
 

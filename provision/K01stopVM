@@ -1,0 +1,37 @@
+#!/bin/bash
+
+OPLIFS=$IFS
+
+IFS='
+'
+
+_l="/etc/login.defs"
+_p="/etc/passwd"
+ 
+## get mini UID limit ##
+l=$(grep "^UID_MIN" $_l | grep -o "[0-9]*")
+
+## get max UID limit ##
+l1=$(grep "^UID_MAX" $_l | grep -o "[0-9]*")
+
+
+awk_reg='$6 ~ /\/home/ && $3 >= '${l}' && $3 <= '${l1}' {print $1;}'
+
+users=$(awk -F: $awk_reg $_p)
+
+for u in ${users[*]}
+do
+	processes=$(sudo -u ${u} -i vagrant global-status --prune | \
+						 grep virtualbox | awk '{split($0,a," "); print a[1]}')
+
+	for item in ${processes[*]}
+	do
+		sudo -u ${u} -i vagrant suspend $item
+	done
+done
+
+wait
+
+IFS=$OLDIFS
+
+exit 0
