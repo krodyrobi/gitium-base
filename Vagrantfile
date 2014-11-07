@@ -20,5 +20,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = HOSTNAME
 
   config.vm.provision "shell", path: "provision/vagrant.sh"
+
+	v.memory = 2048
+	v.cpus = 2
 end
 
